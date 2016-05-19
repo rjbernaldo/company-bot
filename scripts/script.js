@@ -15,12 +15,25 @@ module.exports = function(robot) {
     
     var users = [
       {
-        zID: process.env.USER_ZENDESK_ID,
-	sID: process.env.USER_SLACK_ID
+	zID: process.env.RJ_ZENDESK_ID,
+	sID: process.env.RJ_SLACK_ID
+      },
+      {
+	zID: process.env.TERENCE_ZENDESK_ID,
+	sID: process.env.TERENCE_SLACK_ID
+      },
+      {
+	zID: process.env.GERDA_ZENDESK_ID,
+	sID: process.env.GERDA_SLACK_ID
+      },
+      {
+	zID: process.env.FRANZ_ZENDESK_ID,
+	sID: process.env.FRANZ_SLACK_ID
+      },
+      {
+	zID: process.env.ANDREW_ZENDESK_ID,
+	sID: process.env.ANDREW_SLACK_ID
       }
-      /*
-       * we can add other users here manually for now..
-       */
     ];
 
     users.forEach(function(user) {

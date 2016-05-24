@@ -15,57 +15,63 @@ module.exports = function(robot) {
     
     var users = [
       {
-	zID: process.env.RJ_ZENDESK_ID,
-	sID: process.env.RJ_SLACK_ID
+        zID: process.env.RJ_ZENDESK_ID,
+        sID: process.env.RJ_SLACK_ID
       },
       {
-	zID: process.env.TERENCE_ZENDESK_ID,
-	sID: process.env.TERENCE_SLACK_ID
+        zID: process.env.TERENCE_ZENDESK_ID,
+        sID: process.env.TERENCE_SLACK_ID
       },
       {
-	zID: process.env.GERDA_ZENDESK_ID,
-	sID: process.env.GERDA_SLACK_ID
+        zID: process.env.GERDA_ZENDESK_ID,
+        sID: process.env.GERDA_SLACK_ID
       },
       {
-	zID: process.env.FRANZ_ZENDESK_ID,
-	sID: process.env.FRANZ_SLACK_ID
+        zID: process.env.FRANZ_ZENDESK_ID,
+        sID: process.env.FRANZ_SLACK_ID
       },
       {
-	zID: process.env.ANDREW_ZENDESK_ID,
-	sID: process.env.ANDREW_SLACK_ID
+        zID: process.env.ANDREW_ZENDESK_ID,
+        sID: process.env.ANDREW_SLACK_ID
       }
     ];
 
     users.forEach(function(user) {
-      var url = 'https://' + zendeskDomain + '.zendesk.com/api/v2/users/' + user.zID + '/related.json';
+      var url = 'https://' + zendeskDomain + '.zendesk.com/api/v2/users/' + user.zID + '/tickets/assigned.json';
 
       robot
         .http(url)
         .header('Authorization', auth)
         .get()(function(err, response, body) {
           var jsonResponse = JSON.parse(body);
-	  /*
-	   * full response body
-	   * { 
-	   *   user_related: { 
-	   *     ccd_tickets: 5,
-	   *     assigned_tickets: 0,
-	   *     topics: 0,
-	   *     topic_comments: 0,
-	   *     votes: 0,
-	   *     subscriptions: 0,
-	   *     entry_subscriptions: 0,
-	   *     forum_subscriptions: 0,
-	   *     organization_subscriptions: 0,
-	   *     requested_tickets: 0
-	   *   } 
-	   * }
-	   */
-	  var assignedTicketsCount = jsonResponse.user_related.assigned_tickets;
-	  var message = 'You have a total of ' + assignedTicketsCount + ' assigned tickets.';
+	        var ticketCount = jsonResponse.count;
+          var message;
+          /*
+           * {
+           *   "tickets": [
+           *     {
+           *       "id":      35436,
+           *       "subject": "Help I need somebody!",
+           *       ...
+           *     },
+           *     ...
+           *   ],
+           *   count: 1
+           * }
+           */
 
-	  robot.send({ room: user.sID }, message);
+	        if (ticketCount > 0) {
+	          message = "You have a total of " + ticketCount + " assigned tickets.\n";
+
+            jsonResponse.tickets.forEach(function(ticket, index) {;
+              message += index + ". " + ticket.subject + " (" + ticket.url + ")\n";
+            });
+
+	        } else {
+            message = "You have no tickets today. Awesome!";
+          }
+
+	        robot.send({ room: user.sID }, message);
         });
-    });
   });
 }

@@ -17,25 +17,25 @@ module.exports = function(robot) {
     res.reply('Messaging a break-down of ZenDesk tickets to each of the Integration Support specialists.');
 
     var users = [{
-        name: "Rj",
-        zID: process.env.RJ_ZENDESK_ID,
-        sID: process.env.RJ_SLACK_ID
+        name: process.env.USER1_NAME,
+        zID: process.env.USER1_ZENDESK_ID,
+        sID: process.env.USER1_SLACK_ID
     }, {
-        name: "Terence",
-        zID: process.env.TERENCE_ZENDESK_ID,
-        sID: process.env.TERENCE_SLACK_ID
+        name: process.env.USER2_NAME,
+        zID: process.env.USER2_ZENDESK_ID,
+        sID: process.env.USER2_SLACK_ID
     }, {
-        name: "Gerda",
-        zID: process.env.GERDA_ZENDESK_ID,
-        sID: process.env.GERDA_SLACK_ID
+        name: process.env.USER3_NAME,
+        zID: process.env.USER3_ZENDESK_ID,
+        sID: process.env.USER3_SLACK_ID
     }, {
-        name: "Franz",
-        zID: process.env.FRANZ_ZENDESK_ID,
-        sID: process.env.FRANZ_SLACK_ID
+        name: process.env.USER4_NAME,
+        zID: process.env.USER4_ZENDESK_ID,
+        sID: process.env.USER4_SLACK_ID
     }, {
-        name: "Andrew",
-        zID: process.env.ANDREW_ZENDESK_ID,
-        sID: process.env.ANDREW_SLACK_ID
+        name: process.env.USER5_NAME,
+        zID: process.env.USER5_ZENDESK_ID,
+        sID: process.env.USER5_SLACK_ID
     }];
 
     var summary = '\n*Summary:*\n';

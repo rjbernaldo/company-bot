@@ -7,34 +7,37 @@ var zendeskDomain = process.env.ZENDESK_DOMAIN;
 var auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64');
 
 module.exports = function(robot) {
-  /*
-   * bot sends out assigned ticket count when you @mention him and say 'zendesk ticket count' but this can easily be put inside a setTimeout every lunch time or something..
-   */
-  robot.respond(/zendesk ticket count/i, function(res) {
-    res.reply('Sending zendesk ticket count to agents');
+
+  robot.respond(/hi|hello|help/i, function(res) {
+    res.reply("Greetings! I am here to help Czech that we are helping our lovely customers.?\n`checkin` - Check in with all the Specialists.");
+  });
+
+  robot.respond(/czechin|checkin|check/i, function(res) {
+    res.reply('Messaging a break-down of ZenDesk tickets to each of the Integration Support specialists.');
     
-    var users = [
-      {
+    var users = [{
+        name: "RJ",
         zID: process.env.RJ_ZENDESK_ID,
         sID: process.env.RJ_SLACK_ID
-      },
-      {
+    }, {
+        name: "Terence",
         zID: process.env.TERENCE_ZENDESK_ID,
         sID: process.env.TERENCE_SLACK_ID
-      },
-      {
+    }, {
+        name: "Gerda",
         zID: process.env.GERDA_ZENDESK_ID,
         sID: process.env.GERDA_SLACK_ID
-      },
-      {
+    }, {
+        name: "Franz",
         zID: process.env.FRANZ_ZENDESK_ID,
         sID: process.env.FRANZ_SLACK_ID
-      },
-      {
+    }, {
+        name: "Andrew",
         zID: process.env.ANDREW_ZENDESK_ID,
         sID: process.env.ANDREW_SLACK_ID
-      }
-    ];
+    }];
+
+    var summary = '*Summary:*\n';
 
     users.forEach(function(user) {
       var url = 'https://' + zendeskDomain + '.zendesk.com/api/v2/users/' + user.zID + '/tickets/assigned.json';
@@ -72,6 +75,11 @@ module.exports = function(robot) {
           }
 
 	        robot.send({ room: user.sID }, message);
+
+          summary += '*' + user.name + '* - `' + ticketCount + '` outstanding tickets.';
         });
+
+      res.reply(summary);
+    });
   });
 }

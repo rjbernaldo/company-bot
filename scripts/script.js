@@ -17,7 +17,7 @@ module.exports = function(robot) {
     res.reply('Messaging a break-down of ZenDesk tickets to each of the Integration Support specialists.');
 
     var users = [{
-        name: "RJ",
+        name: "Rj",
         zID: process.env.RJ_ZENDESK_ID,
         sID: process.env.RJ_SLACK_ID
     }, {
@@ -70,7 +70,8 @@ module.exports = function(robot) {
               {
                 title_link: 'Summary',
                 fallback: message,
-                text: message
+                text: message,
+                mrkdwn_in: ['text']
               }
             ]
           });

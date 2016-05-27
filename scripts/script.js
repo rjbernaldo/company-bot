@@ -52,7 +52,7 @@ module.exports = function(robot) {
           var message;
 
           if (ticketCount > 0) {
-            message = 'Hi ' + user.name + '! There are `' + ticketCount + '` developer support tickets waiting for <https://ppay.zendesk.com|you>. :hugging_face:\n';
+            message = 'Hi ' + user.name + '! There are `' + ticketCount + '` developer support tickets waiting for <https://' + zendeskDomain + '.zendesk.com|you>. :hugging_face:\n';
 
             jsonResponse.tickets.forEach(function(ticket, index) {
               var now = new Date().getTime();

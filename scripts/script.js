@@ -1,4 +1,5 @@
-require('dotenv').config();
+var dotenv = require('dotenv').config();
+var async = require('async');
 
 var username = process.env.ZENDESK_USERNAME;
 var password = process.env.ZENDESK_PASSWORD;
@@ -14,7 +15,7 @@ module.exports = function(robot) {
 
   robot.respond(/czechin|checkin|check/i, function(res) {
     res.reply('Messaging a break-down of ZenDesk tickets to each of the Integration Support specialists.');
-    
+
     var users = [{
         name: "RJ",
         zID: process.env.RJ_ZENDESK_ID,
@@ -37,9 +38,9 @@ module.exports = function(robot) {
         sID: process.env.ANDREW_SLACK_ID
     }];
 
-    var summary = '*Summary:*\n';
+    var summary = '\n*Summary:*\n';
 
-    users.forEach(function(user) {
+    async.each(users, function(user, done) {
       var url = 'https://' + zendeskDomain + '.zendesk.com/api/v2/users/' + user.zID + '/tickets/assigned.json';
 
       robot
@@ -49,36 +50,36 @@ module.exports = function(robot) {
           var jsonResponse = JSON.parse(body);
 	        var ticketCount = jsonResponse.count;
           var message;
-          /*
-           * {
-           *   "tickets": [
-           *     {
-           *       "id":      35436,
-           *       "subject": "Help I need somebody!",
-           *       ...
-           *     },
-           *     ...
-           *   ],
-           *   count: 1
-           * }
-           */
 
-	        if (ticketCount > 0) {
-	          message = "You have a total of " + ticketCount + " assigned tickets.\n";
+          if (ticketCount > 0) {
+            message = 'Hi ' + user.name + '! There are `' + ticketCount + '` developer support tickets waiting for <https://ppay.zendesk.com|you>. :hugging_face:\n';
 
-            jsonResponse.tickets.forEach(function(ticket, index) {;
-              message += index + ". " + ticket.subject + " (" + ticket.url + ")\n";
+            jsonResponse.tickets.forEach(function(ticket, index) {
+              var now = new Date().getTime();
+              var ticketUpdateTime = new Date(ticket.updated_at).getTime();
+              var hoursAgo = Math.abs((now - ticketUpdateTime) / (60*60*1000));
+              message = '<' + ticket.url + '|' + ticket.subject + '> - :timer_clock: ' + hoursAgo + ' hrs\n';
             });
-
-	        } else {
-            message = "You have no tickets today. Awesome!";
+          } else {
+            // message = 'Hi ' + user.name + '! You have no tickets!';
           }
 
-	        robot.send({ room: user.sID }, message);
+          robot.adapter.customMessage({
+            channel: user.sID,
+            attachments: [
+              {
+                title_link: 'Summary',
+                fallback: message,
+                text: message
+              }
+            ]
+          });
 
-          summary += '*' + user.name + '* - `' + ticketCount + '` outstanding tickets.';
+          summary += '*' + user.name + '* - `' + ticketCount + '` outstanding tickets.\n';
+
+          done();
         });
-
+    }, function(err) {
       res.reply(summary);
     });
   });

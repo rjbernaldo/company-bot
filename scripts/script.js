@@ -19,29 +19,45 @@ module.exports = function(robot) {
     var users = [{
         name: process.env.USER1_NAME,
         zID: process.env.USER1_ZENDESK_ID,
-        sID: process.env.USER1_SLACK_ID
+        sID: process.env.USER1_SLACK_ID,
+        zendeskView: process.env.USER1_ZENDESK_VIEW,
+        zendeskTag: process.env.USER1_ZENDESK_TAG
     }, {
         name: process.env.USER2_NAME,
         zID: process.env.USER2_ZENDESK_ID,
-        sID: process.env.USER2_SLACK_ID
+        sID: process.env.USER2_SLACK_ID,
+        zendeskView: process.env.USER2_ZENDESK_VIEW,
+        zendeskTag: process.env.USER2_ZENDESK_TAG
     }, {
         name: process.env.USER3_NAME,
         zID: process.env.USER3_ZENDESK_ID,
-        sID: process.env.USER3_SLACK_ID
+        sID: process.env.USER3_SLACK_ID,
+        zendeskView: process.env.USER3_ZENDESK_VIEW,
+        zendeskTag: process.env.USER3_ZENDESK_TAG
     }, {
         name: process.env.USER4_NAME,
         zID: process.env.USER4_ZENDESK_ID,
-        sID: process.env.USER4_SLACK_ID
+        sID: process.env.USER4_SLACK_ID,
+        zendeskView: process.env.USER4_ZENDESK_VIEW,
+        zendeskTag: process.env.USER4_ZENDESK_TAG
     }, {
         name: process.env.USER5_NAME,
         zID: process.env.USER5_ZENDESK_ID,
-        sID: process.env.USER5_SLACK_ID
+        sID: process.env.USER5_SLACK_ID,
+        zendeskView: process.env.USER5_ZENDESK_VIEW,
+        zendeskTag: process.env.USER5_ZENDESK_TAG
+    }, {
+        name: process.env.USER6_NAME,
+        zID: process.env.USER6_ZENDESK_ID,
+        sID: process.env.USER6_SLACK_ID,
+        zendeskView: process.env.USER6_ZENDESK_VIEW,
+        zendeskTag: process.env.USER6_ZENDESK_TAG
     }];
 
     var summary = '\n*Summary:*\n';
 
     async.each(users, function(user, done) {
-      var url = 'https://' + zendeskDomain + '.zendesk.com/api/v2/users/' + user.zID + '/tickets/assigned.json';
+      var url = 'https://' + zendeskDomain + '.zendesk.com/api/v2/search.json?query="type:ticket status:open tags:' + user.zendeskTag + '"';
 
       robot
         .http(url)
@@ -52,7 +68,7 @@ module.exports = function(robot) {
           var message;
 
           if (ticketCount > 0) {
-            message = 'Hi ' + user.name + '! There are `' + ticketCount + '` developer support tickets waiting for <https://' + zendeskDomain + '.zendesk.com|you>. :hugging_face:\n';
+            message = 'Hi ' + user.name + '! There are `' + ticketCount + '` developer support tickets waiting for <https://' + zendeskDomain + '.zendesk.com/agent/filters/' + user.zendeskView + '|you>. :hugging_face:\n';
 
             jsonResponse.tickets.forEach(function(ticket, index) {
               var now = new Date().getTime();
@@ -61,7 +77,7 @@ module.exports = function(robot) {
               message = '<' + ticket.url + '|' + ticket.subject + '> - :timer_clock: ' + hoursAgo + ' hrs\n';
             });
           } else {
-            // message = 'Hi ' + user.name + '! You have no tickets!';
+            // message = 'Hi ' + user.name + '! You have no tickets! :thumbsup:';
           }
 
           robot.adapter.customMessage({
